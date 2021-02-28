@@ -1,4 +1,4 @@
-var Customer = require('./customer');
+var Inventory = require('./inventory');
 const dboperations = require('./dboperations');
 
 var express = require('express');
@@ -17,24 +17,29 @@ router.use((request,response,next)=>{
     next();
 })
 
-router.route("/customers").get((request,response)=>{
-    dboperations.getCustomers().then(result=>{
+router.route("/inventory").get((request,response)=>{
+    dboperations.getInventory().then(result=>{
         response.json(result[0]);
     })
 })
 
-router.route("/customers/:id").get((request,response)=>{
-    dboperations.getCustomer(request.params.id).then(result=>{
+router.route("/inventory/:id").get((request,response)=>{
+    dboperations.getItem(request.params.id).then(result=>{
         response.json(result[0]);
     })
 })
 
-router.route("/customers").post((request,response)=>{
-    let customer = {...request.body}
-    dboperations.addCustomer(customer).then(result => {
+router.route("/inventory").post((request,response)=>{
+    let item = {...request.body}
+    dboperations.addItem(item).then(result => {
         response.status(201).json(result);
     })
 })
+
+router.route('/inventory/:id').delete((request, response) =>{
+    dboperations.delItem(request.params.id).then(result=>{
+        response.json(result[0]);
+    })})
 
 var port = process.env.PORT || 8090;
 app.listen(port);

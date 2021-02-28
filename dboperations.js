@@ -1,60 +1,63 @@
 var config = require('./dbconfig');
 const sql = require('mssql');
+const { request } = require('express');
 
-    async function getCustomers(){
+    async function getInventory(){
         try{
             let pool = await sql.connect(config);
-            let customeraddresses = await pool.request().query("SELECT TOP (1000) * FROM [SalesLT].[Customer]")
-            return customeraddresses.recordsets;
+            let inventory = await pool.request().query("SELECT TOP (1000) * FROM Inventory")
+            return inventory.recordsets;
         }
         catch(error){
             console.log(error);
         }
     };
 
-    async function getCustomer(customerId){
+    async function getItem(id){
         try{
             let pool = await sql.connect(config);
-            let customeraddress = await pool.request()
-            .input('input_parameter', sql.Int, customerId)
-            .query("SELECT * FROM [SalesLT].[Customer] where CustomerID = @input_parameter")
-            return customeraddress.recordsets;
+            let item = await pool.request()
+            .input('input_parameter', sql.Int, id)
+            .query("SELECT * FROM Inventory where ID = @input_parameter")
+            return item.recordsets;
         }
         catch(error){
             console.log(error);
         }
     };
 
-    async function addCustomer(customer){
+    async function delItem(id){
         try{
             let pool = await sql.connect(config);
-            let insertCustomer = await pool.request()
-                .input('CustomerID', sql.Int, customer.CustomerId)
-                .input('FirstName', sql.NVarChar, customer.FirstName)
-                .input('MiddleName', sql.NVarChar, customer.MiddleName)
-                .input('LastName', sql.NVarChar, customer.LastName)
-                .input('EmailAddress', sql.NVarChar, customer.EmailAddress)
-                .input('Phone', sql.NVarChar, customer.Phone)
-                .input('NameStyle', sql.NameStyle, customer.NameStyle)
-                .input('Title', sql.NVarChar, customer.Title)
-                .input('Suffix', sql.NVarChar, customer.Suffix)
-                .input('CompanyName', sql.NVarChar, customer.CompanyName)
-                .input('SalesPerson', sql.NVarChar, customer.SalesPerson)
-                .input('PasswordHash', sql.VarChar, customer.PasswordHash)
-                .input('PasswordSalt', sql.varchar, customer.PasswordSalt)
-                .input('rowguid', sql.UniqueIdentifier, customer.rowguid)
-                .input('ModifiedDate', sql.DateTime, customer.ModifiedDate)
-                .execute('InsertCustomers');
-            return insertCustomer.recordsets;
+            let item = await pool.request()
+            .input('input_parameter', sql.Int, id)
+            .query("DELETE Inventory where ID = @input_parameter")
+            return item.recordsets;
+        }
+        catch(error){
+            console.log(error);
+        }
+    };
+
+    async function addItem(item){
+        try{
+            let pool = await sql.connect(config);
+            let insertItem = await pool.request()
+                .input('name', sql.NVarChar, item.name)
+                .input('quantity', sql.Int, item.quantity)
+                .query('INSERT INTO Inventory (name,quantity) VALUES (@name,@quantity)');
+                return insertItem.recordsets;
         }
         catch(err){
             console.log(err);
         }
+
     } 
 
 
     module.exports={
-        getCustomers:getCustomers,
-        getCustomer:getCustomer,
-        addCustomer:addCustomer
+        getInventory:getInventory,
+        getItem:getItem,
+        addItem:addItem,
+        delItem:delItem
     }

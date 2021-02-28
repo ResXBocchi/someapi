@@ -1,10 +1,12 @@
 const config = {
-    user:'',
-    password:'!',
-    server:'.database.windows.net',
-    database:'',
+    user:'SA',
+    password:'',
+    server:'127.0.0.1',
+    database:'TestDB',
     options:{
-        encrypt: true // Use this if you're on Windows Azure
+        trustedconnection: true,
+        enableArithAbort: true,
+        instancename:'.'
     },
     port: 1433,
 }
